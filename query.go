@@ -109,8 +109,11 @@ func (q *Query) Sort(fields ...string) *Query {
 func (q *Query) Explain(result interface{}) (err error) {
 	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
 		err = q.q.Explain(result)
-		if !isNetworkError(err) {
+		if err == nil {
 			return
+		}
+		if !isNetworkError(err) {
+			continue
 		}
 		q.db.refresh()
 	}
@@ -235,7 +238,6 @@ func (q *Query) LogReplay() *Query {
 	return q
 }
 
-
 // One executes the query and unmarshals the first obtained document into the
 // result argument.  The result must be a struct or map value capable of being
 // unmarshalled into by gobson.  This function blocks until either a result
@@ -253,21 +255,21 @@ func (q *Query) LogReplay() *Query {
 func (q *Query) One(result interface{}) (err error) {
 	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
 		err = q.q.One(result)
-		if !isNetworkError(err) {
+		if err == nil {
 			return
+		}
+		if !isNetworkError(err) {
+			continue
 		}
 		q.db.refresh()
 	}
 	return err
 }
 
-
-
 // Count returns the total number of documents in the result set.
 func (q *Query) Count() (n int, err error) {
 	return q.q.Count()
 }
-
 
 // Iter executes the query and returns an iterator capable of going over all
 // the results. Results will be returned in batches of configurable
@@ -275,12 +277,11 @@ func (q *Query) Count() (n int, err error) {
 // configurable number of documents is iterated over (see the Prefetch method).
 func (q *Query) Iter() *Iter {
 	return &Iter{
-		i: q.q.Iter(),
+		i:  q.q.Iter(),
 		db: q.db,
 	}
 
 }
-
 
 // Distinct unmarshals into result the list of distinct values for the given key.
 //
@@ -296,9 +297,6 @@ func (q *Query) Iter() *Iter {
 func (q *Query) Distinct(key string, result interface{}) error {
 	return q.q.Distinct(key, result)
 }
-
-
-
 
 // MapReduce executes a map/reduce job for documents covered by the query.
 // That kind of job is suitable for very flexible bulk aggregation of data
@@ -393,18 +391,30 @@ func (q *Query) MapReduce(job *mgo.MapReduce, result interface{}) (info *mgo.Map
 func (q *Query) Apply(change mgo.Change, result interface{}) (info *mgo.ChangeInfo, err error) {
 	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
 		info, err = q.q.Apply(change, result)
-		if !isNetworkError(err) {
+		if err == nil {
 			return
+		}
+		if !isNetworkError(err) {
+			continue
 		}
 		q.db.refresh()
 	}
 	return info, err
 }
 
-
 // All works like Iter.All.
-func (q *Query) All(result interface{}) error {
-	return q.q.All(result)
+func (q *Query) All(result interface{}) (err error) {
+	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
+		err = q.q.All(result)
+		if err == nil {
+			return
+		}
+		if !isNetworkError(err) {
+			continue
+		}
+		q.db.refresh()
+	}
+	return err
 }
 
 // The For method is obsolete and will be removed in a future release.
@@ -412,4 +422,3 @@ func (q *Query) All(result interface{}) error {
 func (q *Query) For(result interface{}, f func() error) error {
 	return q.q.For(result, f)
 }
-
