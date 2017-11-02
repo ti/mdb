@@ -59,7 +59,7 @@ func Dial(url string) (*Database, error) {
 	database := info.Database
 	info.Timeout =  10*time.Second
 	//fix for username and password https://docs.mongodb.com/manual/reference/connection-string/
-	//info.Database = ""
+	info.Database = ""
 	session, err := mgo.DialWithInfo(info)
 	if err == nil {
 		session.SetSyncTimeout(1 * time.Minute)
@@ -71,7 +71,6 @@ func Dial(url string) (*Database, error) {
 type Database struct {
 	Name    string
 	session *mgo.Session
-
 	refreshing bool
 }
 
