@@ -41,7 +41,7 @@ func isNetworkError(err error)  bool {
 		return true
 	}
 	e := strings.ToLower(err.Error())
-	if strings.HasPrefix(e, "close") || strings.Contains(e, "shutdown") {
+	if strings.HasPrefix(e, "closed") || strings.HasSuffix(e,"closed"){
 		return true
 	}
 	return false
