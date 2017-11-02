@@ -37,7 +37,7 @@ func isNetworkError(err error)  bool {
 		return true
 	}
 	e := strings.ToLower(err.Error())
-	if strings.Contains(e, "close") || strings.Contains(e, "shutdown") || strings.Contains(e, "connection") {
+	if strings.HasPrefix(e, "close") || strings.HasPrefix(e, "read tcp") || strings.Contains(e, "shutdown") || strings.Contains(e, "connection") {
 		return true
 	}
 	return false
@@ -55,7 +55,7 @@ func Dial(url string) (*Database, error) {
 	database := info.Database
 	info.Timeout =  10*time.Second
 	//fix for username and password https://docs.mongodb.com/manual/reference/connection-string/
-	info.Database = ""
+	//info.Database = ""
 	session, err := mgo.DialWithInfo(info)
 	if err == nil {
 		session.SetSyncTimeout(1 * time.Minute)
