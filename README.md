@@ -10,7 +10,7 @@ A rich mongodb driver based on mgo and auto refresh when "Closed explicitly" and
 
 # why this one
 
-you do not need `session.Clone; defter session.Close(); session.DB("dbname).C("col").Find(...)` to use mgo, this is not safe when open to may files.
+you do not need `session.Clone; defter session.Close(); session.DB("dbname).C("col").Find(...)` to use mgo, this is not safe when open too may files.
 
 mgo will "Closed explicitly" and "EOF"
 
