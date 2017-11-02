@@ -1,18 +1,19 @@
 # mdb
 
-A rich mongodb driver based on mgo and auto refresh when "Closed explicitly" and "EOF"
+A rich mongodb driver based on mgo and auto refresh when "Closed explicitly" or "EOF"
 
 # feature
 
-* one db instance on object
+* do not need `copy := session.Clone; defter copy.Close();`
+* use db instance in project
 * less tcp connections
 * auto refresh
 
 # why this one
 
-you do not need `session.Clone; defter session.Close(); session.DB("dbname).C("col").Find(...)` to use mgo, this is not safe when open too may files.
+you do not need `copy := session.Clone; defter copy.Close(); copy.DB("dbname).C("col").Find(...)` to use mgo, this is not safe when open too may files.
 
-mgo will "Closed explicitly" and "EOF"
+mgo will "Closed explicitly" or "EOF"
 
 # quick start
 
@@ -42,7 +43,6 @@ func main() {
 
 	// Optional. Switch the session to a monotonic behavior.
 	db.SetMode(mdb.Monotonic, true)
-
 	
 	c := db.C("people")
 	err = c.Insert(&Person{"Ale", "+55 53 8116 9639"},
