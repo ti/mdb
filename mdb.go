@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strings"
 	"io"
+	"net"
 )
 
 var MAX_CONNECT_RETRIES = 3
@@ -36,8 +37,11 @@ func isNetworkError(err error)  bool {
 	if err == io.EOF {
 		return true
 	}
+	if _, ok := err.(*net.OpError); ok {
+		return true
+	}
 	e := strings.ToLower(err.Error())
-	if strings.HasPrefix(e, "close") || strings.HasPrefix(e, "read tcp") || strings.Contains(e, "shutdown") || strings.Contains(e, "connection") {
+	if strings.HasPrefix(e, "close") || strings.Contains(e, "shutdown") {
 		return true
 	}
 	return false
