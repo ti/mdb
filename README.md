@@ -14,7 +14,7 @@ A rich mongodb driver based on mgo and auto refresh when "Closed explicitly" or 
 
 if you use  `copy := session.Clone; defter copy.Close(); copy.DB("dbname).C("col").Find(...)` 
 
-you may got "Closed explicitly" or "EOF"  when you very heavy multithreading。
+you may got "Closed explicitly" or "EOF"  when in high concurrency
 
 # quick start
 
