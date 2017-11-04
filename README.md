@@ -46,7 +46,7 @@ func main() {
 	fmt.Println("Phone:", result.Phone)
 }
 ```
-# mongo connection string and database name is different?
+# when mongo connection string and database name is different?
 
 use [mongo-connection-string](https://docs.mongodb.com/manual/reference/connection-string/) + `&db={db_name}` use  to config your db name
 
