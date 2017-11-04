@@ -53,10 +53,6 @@ func TestRefresh(t *testing.T) {
 
 		}()
 	}
-
-	for {
-		time.Sleep(10 * time.Second)
-	}
-
+	time.Sleep(time.Hour)
 }
 

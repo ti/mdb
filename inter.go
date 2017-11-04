@@ -37,7 +37,7 @@ func (iter *Iter) Err() (err error) {
 // standard ways for MongoDB to report an improper query, the returned value has
 // a *QueryError type.
 func (iter *Iter) Close() (err error) {
-	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
+	for i := 0; i < iter.db.MaxConnectRetries; i++ {
 		err = iter.i.Close()
 		if !isNetworkError(err) {
 			return
@@ -113,7 +113,7 @@ func (iter *Iter) Next(result interface{}) bool {
 //    }
 //
 func (iter *Iter) All(result interface{}) (err error) {
-	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
+	for i := 0; i < iter.db.MaxConnectRetries; i++ {
 		err = iter.i.All(result)
 		if !isNetworkError(err) {
 			return

@@ -8,9 +8,9 @@ import (
 	"net"
 	"net/url"
 	"errors"
+	"strconv"
 )
 
-var MAX_CONNECT_RETRIES = 3
 
 type Mode int
 
@@ -37,7 +37,10 @@ const (
 //
 // The following connection options are supported after the question mark:
 //
-//    use mongo official connection-string + &db=dbname to connect
+//    maxRetries  : max retries time  when network is error, default is 2
+//    db          : database name when your connection string and database name is diffrent
+//
+//    use mongo official connection string + &db=dbname to connect
 //
 //    exp: mongodb://user:pass@192.168.1.1:27017?dbname=test
 //
@@ -55,15 +58,24 @@ func Dial(mgoUrl string) (*Database, error) {
 	if db := query.Get("db"); db != "" {
 		dbName = db
 		query.Del("db")
-		uri.RawQuery = query.Encode()
-		mgoUrl = uri.String()
 	} else if len(uri.Path) > 1 {
 		dbName = uri.Path[1:]
 	} else {
 		return nil, errors.New("please use mongodb://***/dbName or  mongodb://***?db=dbName to config default dbName")
 	}
+	maxRetries := 2
+	if n := query.Get("maxRetries"); n != "" {
+		tryn, err := strconv.Atoi(n)
+		if err != nil {
+			return nil, err
+		}
+		maxRetries = tryn
+		query.Del("maxRetries")
+	}
+	uri.RawQuery = query.Encode()
+	mgoUrl = uri.String()
 	session, err := mgo.Dial(mgoUrl)
-	return &Database{ Name:dbName, session:session}, err
+	return &Database{ Name:dbName, MaxConnectRetries: maxRetries, session:session}, err
 }
 
 
@@ -89,6 +101,7 @@ func isNetworkError(err error)  bool {
 
 type Database struct {
 	Name    string
+	MaxConnectRetries int
 	session *mgo.Session
 	refreshing bool
 }

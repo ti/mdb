@@ -107,7 +107,7 @@ func (q *Query) Sort(fields ...string) *Query {
 //     http://www.mongodb.org/display/DOCS/Query+Optimizer
 //
 func (q *Query) Explain(result interface{}) (err error) {
-	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
+	for i := 0; i < q.db.MaxConnectRetries; i++ {
 		err = q.q.Explain(result)
 		if err == nil {
 			return
@@ -253,7 +253,7 @@ func (q *Query) LogReplay() *Query {
 // desired.
 //
 func (q *Query) One(result interface{}) (err error) {
-	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
+	for i := 0; i < q.db.MaxConnectRetries; i++ {
 		err = q.q.One(result)
 		if err == nil {
 			return
@@ -389,7 +389,7 @@ func (q *Query) MapReduce(job *mgo.MapReduce, result interface{}) (info *mgo.Map
 //     http://www.mongodb.org/display/DOCS/Atomic+Operations
 //
 func (q *Query) Apply(change mgo.Change, result interface{}) (info *mgo.ChangeInfo, err error) {
-	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
+	for i := 0; i < q.db.MaxConnectRetries; i++ {
 		info, err = q.q.Apply(change, result)
 		if err == nil {
 			return
@@ -404,7 +404,7 @@ func (q *Query) Apply(change mgo.Change, result interface{}) (info *mgo.ChangeIn
 
 // All works like Iter.All.
 func (q *Query) All(result interface{}) (err error) {
-	for i := 0; i < MAX_CONNECT_RETRIES; i++ {
+	for i := 0; i < q.db.MaxConnectRetries; i++ {
 		err = q.q.All(result)
 		if err == nil {
 			return

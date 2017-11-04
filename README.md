@@ -64,3 +64,19 @@ db, err := mdb.Dial("mongodb://username:password@127.0.0.1:27017/test")
 db, err := mdb.Dial("mongodb://username:password@127.0.0.1:27017/db_for_connect?db=test")
 ```
 
+# new connection string parameter
+
+maxRetries  : max retries time  when network is error, default is 2
+
+db          : database name when your connection string and database name is different
+
+FULL Example:
+ 
+```go
+db, err := mdb.Dial("mongodb://username:password@127.0.0.1:27017?db=test&maxRetries=2")
+```
+
+
+
+
+
