@@ -3,10 +3,11 @@ package mdb
 import (
 	"gopkg.in/mgo.v2"
 	"time"
-	"errors"
 	"strings"
 	"io"
 	"net"
+	"net/url"
+	"errors"
 )
 
 var MAX_CONNECT_RETRIES = 3
@@ -29,6 +30,43 @@ const (
 	Monotonic Mode = 1 // Same as SecondaryPreferred before first write. Same as Primary after first write.
 	Strong    Mode = 2 // Same as Primary.
 )
+// Dial establishes a new session to the cluster identified by the given seed
+// server(s). The session will enable communication with all of the servers in
+// the cluster, so the seed servers are used only to find out about the cluster
+// topology.
+//
+// The following connection options are supported after the question mark:
+//
+//    use mongo official connection-string + &db=dbname to connect
+//
+//    exp: mongodb://user:pass@192.168.1.1:27017?dbname=test
+//
+// Relevant documentation:
+//
+//     http://docs.mongodb.org/manual/reference/connection-string/
+//
+func Dial(mgoUrl string) (*Database, error) {
+	uri, err := url.Parse(mgoUrl)
+	if err != nil {
+		return nil, err
+	}
+	query := uri.Query()
+	var dbName string
+	if db := query.Get("db"); db != "" {
+		dbName = db
+		query.Del("db")
+		uri.RawQuery = query.Encode()
+		mgoUrl = uri.String()
+	} else if len(uri.Path) > 1 {
+		dbName = uri.Path[1:]
+	} else {
+		return nil, errors.New("please use mongodb://***/dbName or  mongodb://***?db=dbName to config default dbName")
+	}
+	session, err := mgo.Dial(mgoUrl)
+	return &Database{ Name:dbName, session:session}, err
+}
+
+
 //mgo common error is eof Closed explicitly
 func isNetworkError(err error)  bool {
 	if err == nil {
@@ -48,25 +86,6 @@ func isNetworkError(err error)  bool {
 }
 
 
-func Dial(url string) (*Database, error) {
-	info, err := mgo.ParseURL(url)
-	if err != nil {
-		return nil, err
-	}
-	if info.Database == "" {
-		return nil, errors.New("default database name required from url")
-	}
-	database := info.Database
-	info.Timeout =  10*time.Second
-	//fix for username and password https://docs.mongodb.com/manual/reference/connection-string/
-	info.Database = ""
-	session, err := mgo.DialWithInfo(info)
-	if err == nil {
-		session.SetSyncTimeout(1 * time.Minute)
-		session.SetSocketTimeout(1 * time.Minute)
-	}
-	return &Database{ Name:database, session:session}, err
-}
 
 type Database struct {
 	Name    string
