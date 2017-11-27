@@ -107,7 +107,7 @@ type Database struct {
 }
 
 func (db *Database) DB(name string) *Database {
-	return &Database{session:db.session, Name:name}
+	return &Database{session:db.session, Name:name, MaxConnectRetries: db.MaxConnectRetries,}
 }
 
 func (db *Database) Close(){

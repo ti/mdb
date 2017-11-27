@@ -8,7 +8,6 @@ import (
 type Collection struct {
 	Database *Database
 	Name     string
-
 	col      *mgo.Collection
 }
 
