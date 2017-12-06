@@ -74,6 +74,7 @@ FULL Example:
  
 ```go
 db, err := mdb.Dial("mongodb://username:password@127.0.0.1:27017?db=test&maxRetries=2")
+
 ```
 
 
