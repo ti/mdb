@@ -1,8 +1,8 @@
 package mdb
 
 import (
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
 type Collection struct {
@@ -186,14 +186,13 @@ func (c *Collection) FindId(id interface{}) *Query {
 }
 
 func (c *Collection) Find(query interface{}) *Query {
-	return &Query{db:c.Database, q:c.col.Find(query)}
+	return &Query{db: c.Database, q: c.col.Find(query)}
 }
 
 func (c *Collection) NewIter(firstBatch []bson.Raw, cursorId int64, err error) *Iter {
-	return &Iter{i:c.col.NewIter(c.Database.session, firstBatch, cursorId, err), db: c.Database}
+	return &Iter{i: c.col.NewIter(c.Database.session, firstBatch, cursorId, err), db: c.Database}
 }
 
 func (c *Collection) Bulk() *mgo.Bulk {
 	return c.col.Bulk()
 }
-
