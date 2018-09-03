@@ -79,7 +79,7 @@ func Dial(mgoUrl string) (*Database, error) {
 }
 
 
-//mgo common error is eof Closed explicitly
+//isNetworkError mgo common error is eof Closed explicitly
 func isNetworkError(err error)  bool {
 	if err == nil {
 		return false

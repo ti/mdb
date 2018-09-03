@@ -4,12 +4,16 @@ import (
 	"github.com/globalsign/mgo"
 )
 
+// Iter stores informations about a Cursor
+//
+// Relevant documentation:
+//
+//    https://docs.mongodb.com/manual/tutorial/iterate-a-cursor/
+//
 type Iter struct {
 	i  *mgo.Iter
 	db *Database
 }
-
-
 
 // Err returns nil if no errors happened during iteration, or the actual
 // error otherwise.

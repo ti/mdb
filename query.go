@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+
+// Query keeps info on the query.
 type Query struct {
 	q  *mgo.Query
 	db *Database
@@ -13,7 +15,6 @@ type Query struct {
 // Batch sets the batch size used when fetching documents from the database.
 // It's possible to change this setting on a per-session basis as well, using
 // the Batch method of Session.
-
 // The default batch size is defined by the database itself.  As of this
 // writing, MongoDB will use an initial size of min(100 docs, 4MB) on the
 // first batch, and 4MB on remaining ones.
@@ -417,7 +418,7 @@ func (q *Query) All(result interface{}) (err error) {
 	return err
 }
 
-// The For method is obsolete and will be removed in a future release.
+// For The For method is obsolete and will be removed in a future release.
 // See Iter as an elegant replacement.
 func (q *Query) For(result interface{}, f func() error) error {
 	return q.q.For(result, f)
